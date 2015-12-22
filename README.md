@@ -22,7 +22,7 @@ $ composer require lokielse/tencent-xg-push
 ## Usage
 
 ```php
-$client = new XGPush(<your_access_id>, <your_access_key>);
+$client = new XGPush(<your_access_id>, <your_secret_key>);
 $client->createMultiplePush(...)
 $client->pushAllAndroid(...)
 $client->queryTokenTags(...)
