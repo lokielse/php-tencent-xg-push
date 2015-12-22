@@ -13,7 +13,7 @@ use Tencent\XGPush\Models\TagTokenPair;
  * Class XingeApp
  * @package Tencent\XGPush
  */
-class XingeApp
+class XGPush
 {
 
     const DEVICE_ALL = 0;
@@ -81,8 +81,9 @@ class XingeApp
      * @return mixed
      * @throws Exception
      */
-    public function  pushSingleDevice($deviceToken, $message, $environment = 0)
+    public function pushSingleDevice($deviceToken, $message, $environment = 0)
     {
+
         $this->validateMessage($message);
         $this->validateMessageType($message);
         $this->validateEnvironment($message, $environment);
@@ -92,8 +93,10 @@ class XingeApp
         $params['expire_time'] = $message->getExpireTime();
         $params['send_time']   = $message->getSendTime();
         if ($message instanceof MessageAndroid) {
+
             $params['multi_pkg'] = $message->getMultiPkg();
         }
+
         $params['device_token'] = $deviceToken;
         $params['message_type'] = $message->getType();
         $params['message']      = $message->toJson();
@@ -112,9 +115,9 @@ class XingeApp
      */
     private function validateMessageType($message)
     {
-        if (( $this->accessId ) >= XingeApp::IOS_MIN_ID and $message instanceof MessageIOS) {
+        if (( $this->accessId ) >= XGPush::IOS_MIN_ID and $message instanceof MessageIOS) {
             //ok
-        } elseif (( $this->accessId ) < XingeApp::IOS_MIN_ID and $message instanceof MessageAndroid) {
+        } elseif (( $this->accessId ) < XGPush::IOS_MIN_ID and $message instanceof MessageAndroid) {
             //ok
         } else {
             throw new Exception('message type not fit accessId', -1);
@@ -174,7 +177,7 @@ class XingeApp
     private function validateEnvironment($message, $environment)
     {
         if ($message instanceof MessageIOS) {
-            if ($environment != XingeApp::IOS_ENV_DEV && $environment != XingeApp::IOS_ENV_PROD) {
+            if ($environment != XGPush::IOS_ENV_DEV && $environment != XGPush::IOS_ENV_PROD) {
                 throw new Exception('ios message environment invalid', -1);
             }
         }
