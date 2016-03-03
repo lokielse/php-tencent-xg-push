@@ -192,9 +192,9 @@ class XGPush
      */
     public function api($uri, $params)
     {
-        $url            = sprintf('%s%s', rtrim(self::ENDPOINT, '/'), $uri);
+        $url            = sprintf('%s/%s', rtrim(self::ENDPOINT, '/'), $uri);
         $paramsBase     = new ParamsBase($params);
-        $sign           = $paramsBase->generateSign(RequestBase::METHOD_POST, $uri, $this->secretKey);
+        $sign           = $paramsBase->generateSign(RequestBase::METHOD_POST, $url, $this->secretKey);
         $params['sign'] = $sign;
 
         $requestBase = new RequestBase();
@@ -347,9 +347,7 @@ class XGPush
     public function  pushAllDevices($deviceType, $message, $environment = 0)
     {
         $this->validateDeviceType($deviceType);
-
         $this->validateMessage($message);
-
         $this->validateMessageType($message);
         $this->validateEnvironment($message, $environment);
 

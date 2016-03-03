@@ -3,9 +3,6 @@ The PHP SDK for Tencent XGPush
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
-[![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
-[![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
 
@@ -23,6 +20,7 @@ $ composer require lokielse/tencent-xg-push
 
 ```php
 $client = new XGPush(<your_access_id>, <your_secret_key>);
+
 $client->createMultiplePush(...)
 $client->pushAllAndroid(...)
 $client->queryTokenTags(...)
