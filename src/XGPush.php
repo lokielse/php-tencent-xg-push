@@ -396,12 +396,12 @@ class XGPush
      *
      * @param $title
      * @param $content
-     * @param $tag
+     * @param $tags
      *
      * @return mixed
      * @throws Exception
      */
-    public function pushTagAndroid($title, $content, $tag)
+    public function pushTagsAndroid($title, $content, $tags)
     {
         $message = new MessageAndroid();
         $message->setTitle($title);
@@ -412,7 +412,7 @@ class XGPush
         $action->setActionType(ClickAction::TYPE_ACTIVITY);
         $message->setAction($action);
 
-        return $this->pushTags(0, array( 0 => $tag ), 'OR', $message);
+        return $this->pushTags(0, $tags, 'AND', $message);
     }
 
 
@@ -468,18 +468,19 @@ class XGPush
      * 使用默认设置推送消息给标签选中设备ios版
      *
      * @param $content
-     * @param $tag
+     * @param $tags
+     * @param $op
      * @param $environment
      *
      * @return mixed
      * @throws Exception
      */
-    public function pushTagIOS($content, $tag, $environment)
+    public function pushTagsIOS($content, $tags, $op = 'AND', $environment)
     {
         $message = new MessageIOS();
         $message->setAlert($content);
 
-        return $this->pushTags(0, array( 0 => $tag ), 'OR', $message, $environment);
+        return $this->pushTags(0, $tags, $op, $message, $environment);
     }
 
 
