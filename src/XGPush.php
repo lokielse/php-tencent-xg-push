@@ -89,7 +89,6 @@ class XGPush
         $this->validateEnvironment($message, $environment);
 
         $params                = array();
-        $params['access_id']   = $this->accessId;
         $params['expire_time'] = $message->getExpireTime();
         $params['send_time']   = $message->getSendTime();
         if ($message instanceof MessageAndroid) {
@@ -100,7 +99,6 @@ class XGPush
         $params['device_token'] = $deviceToken;
         $params['message_type'] = $message->getType();
         $params['message']      = $message->toJson();
-        $params['timestamp']    = time();
         $params['environment']  = $environment;
 
         return $this->api('push/single_device', $params);
@@ -181,40 +179,6 @@ class XGPush
                 throw new Exception('ios message environment invalid', -1);
             }
         }
-    }
-
-
-    /**
-     * @param $uri
-     * @param $params
-     *
-     * @return mixed
-     */
-    public function api($uri, $params)
-    {
-        $url            = sprintf('%s/%s', rtrim(self::ENDPOINT, '/'), $uri);
-        $paramsBase     = new ParamsBase($params);
-        $sign           = $paramsBase->generateSign(RequestBase::METHOD_POST, $url, $this->secretKey);
-        $params['sign'] = $sign;
-
-        $requestBase = new RequestBase();
-
-        $result = $requestBase->exec($url, $params, RequestBase::METHOD_POST);
-
-        $data = $this->json2Array($result);
-
-        return $data;
-    }
-
-
-    /**
-     * @param $json
-     *
-     * @return mixed
-     */
-    protected function json2Array($json)
-    {
-        return json_decode($json, true);
     }
 
 
@@ -397,11 +361,12 @@ class XGPush
      * @param $title
      * @param $content
      * @param $tags
+     * @param $op
      *
      * @return mixed
      * @throws Exception
      */
-    public function pushTagsAndroid($title, $content, $tags)
+    public function pushTagsAndroid($title, $content, $tags, $op = 'AND')
     {
         $message = new MessageAndroid();
         $message->setTitle($title);
@@ -412,7 +377,7 @@ class XGPush
         $action->setActionType(ClickAction::TYPE_ACTIVITY);
         $message->setAction($action);
 
-        return $this->pushTags(0, $tags, 'AND', $message);
+        return $this->pushTags(0, $tags, $op, $message);
     }
 
 
@@ -469,13 +434,13 @@ class XGPush
      *
      * @param $content
      * @param $tags
-     * @param $op
      * @param $environment
+     * @param $op
      *
      * @return mixed
      * @throws Exception
      */
-    public function pushTagsIOS($content, $tags, $op = 'AND', $environment)
+    public function pushTagsIOS($content, $tags, $environment, $op = 'AND')
     {
         $message = new MessageIOS();
         $message->setAlert($content);
@@ -795,6 +760,23 @@ class XGPush
 
 
     /**
+     * 删除应用中某account映射的所有token
+     *
+     * @param string $account
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function deleteAccountTokens($account)
+    {
+        $params            = array();
+        $params['account'] = $account;
+
+        return $this->api('application/del_app_account_all_tokens', $params);
+    }
+
+
+    /**
      * @param array $tagTokenPairs
      *
      * @return array
@@ -818,6 +800,42 @@ class XGPush
         }
 
         return $tagTokens;
+    }
+
+
+    /**
+     * @param $uri
+     * @param $params
+     *
+     * @return mixed
+     */
+    public function api($uri, $params)
+    {
+        $url                 = sprintf('%s/%s', rtrim(self::ENDPOINT, '/'), $uri);
+        $params['access_id'] = $this->accessId;
+        $params['timestamp'] = time();
+        $paramsBase          = new ParamsBase($params);
+        $sign                = $paramsBase->generateSign(RequestBase::METHOD_POST, $url, $this->secretKey);
+        $params['sign']      = $sign;
+
+        $requestBase = new RequestBase();
+
+        $result = $requestBase->exec($url, $params, RequestBase::METHOD_POST);
+
+        $data = $this->json2Array($result);
+
+        return $data;
+    }
+
+
+    /**
+     * @param $json
+     *
+     * @return mixed
+     */
+    protected function json2Array($json)
+    {
+        return json_decode($json, true);
     }
 
 }
